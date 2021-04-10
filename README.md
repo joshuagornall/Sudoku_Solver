@@ -1,6 +1,6 @@
-A Sudoku solving framework tool that utilises stochastic optimisation. 💻
+A sudoku solver tool that utilises stochastic optimisation. 💻
 
-![Visualisation of solving](https://github.com/TomRSavage/SudokuSolving/blob/master/SodukoSolve.gif)
+![Visualisation of solving](https://github.com/joshuagornall/Sudoku_Solver/blob/master/SudokuSolve.gif)
 
 <h1>Function Use</h1>
 The code takes an unsolved sudoku in the form if an array of length 81, working from left to right, top to bottom. Empty values are represented by 0's.
