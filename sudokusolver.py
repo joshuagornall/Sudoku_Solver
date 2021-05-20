@@ -7,6 +7,11 @@ import numpy.random as rnd
 from smt.sampling_methods import LHS
 import time
 
+
+''' Produced by Joshua Gornall
+On a sunday afternoon '''
+
+
 unsolved = np.array(
     [3, 9, 6, 0, 8, 0, 7, 1, 5, 0, 0, 7, 9, 6, 1, 0, 0, 3, 8, 4, 1, 0, 3, 0, 2, 0, 0, 6, 3, 0, 1, 0, 0, 5, 2, 0, 1, 0,
      0, 7, 2, 5, 3, 9, 0, 0, 5, 2, 6, 9, 3, 8, 0, 1, 4, 0, 8, 3, 7, 6, 0, 0, 2, 2, 0, 5, 8, 0, 9, 0, 3, 4, 9, 6, 3, 0,
