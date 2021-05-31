@@ -1,7 +1,15 @@
-sudoku = input("Enter Soduku")
-# 070000009510420600080300700008001370023080040400900100962800030000010400700203096
-puz = [[int(sudoku[(i+j)-1]) for i in range(1,10)] for j in range(0,81,9)]
+import numpy as np
+#sudoku = input("Enter Soduku")
+#sudoku= 070000009510420600080300700008001370023080040400900100962800030000010400700203096
 
+
+#puz = [[int(sudoku[(i+j)-1]) for i in range(1,10)] for j in range(0,81,9)]
+unsolved = np.array(
+    [3, 9, 6,1, 8, 0, 7, 1, 5, 0, 0, 7, 9, 6, 1, 0, 0, 3, 8, 4, 1, 0, 3, 0, 2, 0, 0, 6, 3, 0, 1, 0, 0, 5, 2, 0, 1, 0,
+     0, 7, 2, 5, 3, 9, 0, 0, 5, 2, 6, 9, 3, 8, 0, 1, 4, 0, 8, 3, 7, 6, 0, 0, 2, 2, 0, 5, 8, 0, 9, 0, 3, 4, 9, 6, 3, 0,
+     0, 2, 0, 7, 8])
+
+puz=np.reshape(unsolved, (9, 9))
 
 def check(puzzle, i, row, col):
     rows = puzzle[int(row)]
