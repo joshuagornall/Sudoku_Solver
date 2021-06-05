@@ -123,7 +123,7 @@ def sample_min_error(sample_error_col_obj):
     return sample_error_col_obj[np.argmin(sample_error_col_obj[:, -1])] 
     
 
-def evolution(f=cost_function, p = 50, it = 10, cull_percen = 0.5, mut_percen = 0.01, unsolved=unsolved,initial_condition=np.nan):
+def evolution(f=cost_function, p = 50, it = 10, cull_percen = 0.5, mut_percen = 0.01, unsolved=unsolved,initial_condition=[0]):
     '''
     INPUTS:
     f               : sudoku cost function
@@ -147,7 +147,7 @@ def evolution(f=cost_function, p = 50, it = 10, cull_percen = 0.5, mut_percen = 
     unsolved
 
     '''
-
+    print("Solving Sudoku")
     empty_entries = unsolved.size - np.count_nonzero(unsolved) # count zeros
     bounds = np.tile([1, 9],(empty_entries,1))
 
@@ -197,20 +197,14 @@ def evolution(f=cost_function, p = 50, it = 10, cull_percen = 0.5, mut_percen = 
         sample_best_values = sample_random_values[best_index]
         sample_best_values_val = sample_random_values[best_index, -1]
         
-        print('errors:'+str(sample_best_values_val), end='\n')
+        print('iteration:'+str(iteration)+ ' errors:'+str(sample_best_values_val), end='\n')
         fstore.append(sample_best_values_val.astype('int'))
         val_store.append(sample_best_values.astype('int'))
         '''CROSSOVER HERE: change the order of the columns in each row'''
-        rnd.shuffle(sample_random_values)
         
-        # for i in np.linspace(0, int(p - 2), int(p*0.5)).astype('int'):  # SINGLE CROSSOVER
-
-        #     k = rnd.randint(0, empty_entries) # generate one random number [0,empty_entries]
-        #     sample_random_values[i + 1, k:] = sample_random_values[i, k:]
-        #     sample_random_values[i + 1, :k] = sample_random_values[i + 1, :k]
-        #     sample_random_values[i, :k] = sample_random_values[i, :k]
-        #     sample_random_values[i, k:] = sample_random_values[i + 1, k:]
-            
+        
+        
+        rnd.shuffle(sample_random_values)
         '''MUTATION CODE HERE'''
         for i in range(len(sample_random_values)):
             for j in range(empty_entries):
@@ -218,21 +212,27 @@ def evolution(f=cost_function, p = 50, it = 10, cull_percen = 0.5, mut_percen = 
                 #print(np.argmin(sample_random_values[:, -1]))
                 if prob < mut_percen and best_index!=i :
                     sample_random_values[i, j] = rnd.uniform(bounds[j, 0], bounds[j, 1])
+                    
+        
         
         sample_random_values = sample_random_values[:, :-1] # delete the last column (duplicates number)
         sample_random_values = sample_error_col(p, sample_random_values) # calculate new errors
-
+        
+        
         # plot the current Sudoku and error per iteraton
-        plot_util(unsolved, sample_best_values, fstore, iteration)
-       
-    images = []
-    for filename in range(it):
-        images.append(imageio.imread('img/'+ str(filename) + '.png'))
-        os.remove('img/'+ str(filename) + '.png')
-
-    imageio.mimsave('SudokuSolve.gif', images)
+        if it<5: plot_util(unsolved, sample_best_values, fstore, iteration)
+    if it<5:   
+        images = []
+        for filename in range(it):
+            images.append(imageio.imread('img/'+ str(filename) + '.png'))
+            #os.remove('img/'+ str(filename) + '.png')
+        imageio.mimsave('SudokuSolve.gif', images)
+    
     return val_store
 
-ci=np.nan()
-solved = evolution(f=cost_function, p = 500, it = 10, cull_percen = 1, mut_percen = 0.05, unsolved=unsolved,initial_condition=ci)
-ci=solved[-1]
+solved= [np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 9, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 0]),
+         np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 8, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 9])]
+
+#solved = evolution(f=cost_function, p = 50, it = 100, cull_percen = 1, mut_percen = 0.01, unsolved=unsolved)
+for i in range(1000):
+    solved = evolution(f=cost_function, p = 100, it = 100, cull_percen = 1, mut_percen = 0.05, unsolved=unsolved, initial_condition=solved[-1])
