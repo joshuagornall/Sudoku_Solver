@@ -65,68 +65,6 @@ def cost_function(x,unsolved=unsolved):
             
     return num_duplicate,num_duplicates_row,num_duplicates_col,num_duplicates_quad
 
-
-
-
-def plot_util(unsolved, sample_best_values, errors_best_sample_store, iteration):
-    '''
-    INPUTS:
-    unsolved            : unsolved sudoku array
-    sample_best_values              : input array
-    errors_best_sample_store              : cost function value array
-    iteration           : the iteration number
-
-    OUTPUTS:
-    a .png file displaying the sudoku as well as the
-    function value over iteration.
-    '''
-    x_count = 0
-    empty_array = np.zeros_like(unsolved)
-    for i in range(len(unsolved)):  # filling empty sudoku
-        if unsolved[i] == 0:
-            empty_array[i] = 1
-    empty_array = np.reshape(empty_array, (9, 9))
-    empty_array = np.transpose(empty_array)
-    sudoku_table = copy.deepcopy(unsolved)
-    for i in range(len(sudoku_table)):
-        if sudoku_table[i] == 0:
-            sudoku_table[i] = sample_best_values[x_count]
-            x_count += 1
-    sudoku_table = np.reshape(sudoku_table, (9, 9))
-    
-    fig, axs = plt.subplots(1, 2, figsize=(8, 4))
-    plt.subplots_adjust(left=0.05, right=0.95)
-    axs[0].set_title('Current best Sudoku')
-    axs[0].axis('off')
-    axs[1].set_xlabel('Iteration')
-    axs[1].grid('True')
-    axs[1].set_ylabel('Errors')
-    #axs[1].set_yscale('log')
-    for i in range(10):
-        if i == 0 or i == 3 or i == 6 or i == 9:
-            axs[0].plot([0, 9], [i, i], color='k', linewidth=3)
-            axs[0].plot([i, i], [0, 9], color='k', linewidth=3)
-        else:
-            axs[0].plot([0, 9], [i, i], color='k', linewidth=1)
-            axs[0].plot([i, i], [0, 9], color='k', linewidth=1)
-    
-    
-    sudoku_table = np.transpose(sudoku_table)
-    
-    for i in range(9):
-        for j in range(9):
-            if empty_array[i, j] == 1:
-                axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j], fontweight='extra bold')
-            else:
-                axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j])
-    axs[1].plot(np.linspace(0, len(errors_best_sample_store), len(errors_best_sample_store)), errors_best_sample_store)
-    
-    fig.savefig('img/'+str(iteration) + '.png')
-    
-    
-    
-    return
-
 def plot_util2(unsolved, solved):
     '''
     INPUTS:
@@ -199,7 +137,7 @@ def plot_util2(unsolved, solved):
         #fig.savefig('img/'+str(iteration) + '.png')
         camera.snap()
     animation = camera.animate()
-    animation.save('Sudoku_solution.mp4')
+    animation.save('Sudoku_solution.gif')
     return animation
 
 
@@ -314,11 +252,10 @@ def evolution2(p = 20, it = 100000, cull_percen = 0.999, mut_percen = 0.05, unso
         sample_random_values = sample_random_values[:, :-4] # delete the last column (duplicates number)
         sample_random_values = sample_error_col(p, sample_random_values) # calculate new errors
         
+        sample_best_values_store.append(sample_best_values)
         
         # plot the current Sudoku and error per iteraton
         if iteration%100==0: print('iteration:'+str(iteration)+ ' errors:'+str(errors_best_sample), end='\n')
-        sample_best_values_store.append(sample_best_values)
-        #if iteration%10==0:plot_util(unsolved, sample_best_values, errors_best_sample_store, iteration)
         if errors_best_sample[0]==0: break
 
     return sample_best_values_store
