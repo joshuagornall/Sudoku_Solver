@@ -149,7 +149,7 @@ def plot_into_gif(unsolved, solved,number_steps=100):
         #fig.savefig('img/'+str(iteration) + '.png')
         camera.snap()
     animation = camera.animate()
-    animation.save('Sudoku_solution.mp4')
+    animation.save('Sudoku_solution.gif',dpi=100,extra_args=['-loop','1'])
     return animation
 
 
@@ -270,7 +270,7 @@ solved                          = genethic_algorithm(population_size   = 20,
                                                      subset_percentage = 0.999,
                                                      mut_percen        = 0.05,
                                                      unsolved          = unsolved)
-animation=plot_into_gif(unsolved,solved,10)
+animation=plot_into_gif(unsolved,solved,100)
 
 
 
