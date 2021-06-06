@@ -191,7 +191,7 @@ def tourment_selection(sample_random_values,population_size,subset_percentage,in
     sample_random_values        = np.concatenate((complement_sample, sample_random_values_subset), axis=0) # concatenate tournament subset + complement
     return sample_random_values
 
-def genethic_algorithm(population_size = 20, n_iterations = 100000, subset_percentage = 0.999, mut_percen = 0.05, unsolved=unsolved,initial_condition=[0]):
+def genetic_algorithm(population_size = 20, n_iterations = 100000, subset_percentage = 0.999, mut_percen = 0.05, unsolved=unsolved,initial_condition=[0]):
     '''
     GENETIC ALGORITHM TO SOLVE THE SUDOKU GRID
     
@@ -264,7 +264,7 @@ def genethic_algorithm(population_size = 20, n_iterations = 100000, subset_perce
 #solved= [np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 9, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 0, 0,0,0]),
 #         np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 8, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 9])]
 
-solved                          = genethic_algorithm(population_size   = 20,
+solved                          = genetic_algorithm(population_size   = 20,
                                                      n_iterations      = 100000,
                                                      subset_percentage = 0.999,
                                                      mut_percen        = 0.05,
