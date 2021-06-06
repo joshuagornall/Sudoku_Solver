@@ -6,10 +6,11 @@ import numpy.random as rnd
 import random
 import glob
 from celluloid import Camera 
-from IPython.display import HTML
-
 import os
     
+from IPython import get_ipython
+get_ipython().magic('reset -sf')
+
 unsolved = np.array(
     [3, 9, 6, 0, 8, 0, 7, 1, 5, 0, 0, 7, 9, 6, 1, 0, 0, 3, 8, 4, 1, 0, 3, 0, 2, 0, 0, 6, 3, 0, 1, 0, 0, 5, 2, 0, 1, 0,
      0, 7, 2, 5, 3, 9, 0, 0, 5, 2, 6, 9, 3, 8, 0, 1, 4, 0, 8, 3, 7, 6, 0, 0, 2, 2, 0, 5, 8, 0, 9, 0, 3, 4, 9, 6, 3, 0,
@@ -67,12 +68,12 @@ def cost_function(x,unsolved=unsolved):
 
 
 
-def plot_util(unsolved, sample_best_values, fstore, iteration):
+def plot_util(unsolved, sample_best_values, errors_best_sample_store, iteration):
     '''
     INPUTS:
     unsolved            : unsolved sudoku array
     sample_best_values              : input array
-    fstore              : cost function value array
+    errors_best_sample_store              : cost function value array
     iteration           : the iteration number
 
     OUTPUTS:
@@ -86,12 +87,13 @@ def plot_util(unsolved, sample_best_values, fstore, iteration):
             empty_array[i] = 1
     empty_array = np.reshape(empty_array, (9, 9))
     empty_array = np.transpose(empty_array)
-    a = copy.deepcopy(unsolved)
-    for i in range(len(a)):
-        if a[i] == 0:
-            a[i] = sample_best_values[x_count]
+    sudoku_table = copy.deepcopy(unsolved)
+    for i in range(len(sudoku_table)):
+        if sudoku_table[i] == 0:
+            sudoku_table[i] = sample_best_values[x_count]
             x_count += 1
-    a = np.reshape(a, (9, 9))
+    sudoku_table = np.reshape(sudoku_table, (9, 9))
+    
     fig, axs = plt.subplots(1, 2, figsize=(8, 4))
     plt.subplots_adjust(left=0.05, right=0.95)
     axs[0].set_title('Current best Sudoku')
@@ -107,16 +109,99 @@ def plot_util(unsolved, sample_best_values, fstore, iteration):
         else:
             axs[0].plot([0, 9], [i, i], color='k', linewidth=1)
             axs[0].plot([i, i], [0, 9], color='k', linewidth=1)
-    a = np.transpose(a)
+    
+    
+    sudoku_table = np.transpose(sudoku_table)
+    
     for i in range(9):
         for j in range(9):
             if empty_array[i, j] == 1:
-                axs[0].text(i + 0.45, 9 - 0.65 - j, a[i, j], fontweight='extra bold')
+                axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j], fontweight='extra bold')
             else:
-                axs[0].text(i + 0.45, 9 - 0.65 - j, a[i, j])
-    axs[1].plot(np.linspace(0, len(fstore), len(fstore)), fstore)
+                axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j])
+    axs[1].plot(np.linspace(0, len(errors_best_sample_store), len(errors_best_sample_store)), errors_best_sample_store)
+    
     fig.savefig('img/'+str(iteration) + '.png')
+    
+    
+    
     return
+
+def plot_util2(unsolved, solved):
+    '''
+    INPUTS:
+    unsolved            : unsolved sudoku array
+    sample_best_values              : input array
+    errors_best_sample_store              : cost function value array
+    iteration           : the iteration number
+
+    OUTPUTS:
+    sudoku_table .png file displaying the sudoku as well as the
+    function value over iteration.
+    '''
+    errors_best_sample_store=[solved[i][range(-4,0)]for i in range(len(solved))]
+    
+    iterations=np.size(solved,0)
+
+    # filling empty sudoku
+    empty_array = np.zeros_like(unsolved)
+    
+    for i in range(len(unsolved)):  
+        if unsolved[i] == 0:
+            empty_array[i] = 1
+    empty_array = np.reshape(empty_array, (9, 9))
+    empty_array = np.transpose(empty_array)
+    
+    
+    # fill zeros with sample values
+    fig, axs = plt.subplots(1, 2, figsize=(8, 4))
+    plt.subplots_adjust(left=0.05, right=0.95)
+    camera = Camera(fig)# the camera gets our figure
+    
+    axs[0].set_title('Current best Sudoku')
+    axs[0].axis('off')
+    axs[1].set_xlabel('Iteration')
+    axs[1].grid('True')
+    axs[1].set_ylabel('Errors')
+
+                
+    for iteration in np.linspace(0,iterations-1,100).astype('int'):
+        sudoku_table = copy.deepcopy(unsolved)
+        print(iteration)
+        sample_best_values=solved[iteration]
+        
+        x_count = 0
+        for i in range(len(sudoku_table)):
+            if sudoku_table[i] == 0:
+                sudoku_table[i] = sample_best_values[x_count]
+                x_count += 1
+                
+        sudoku_table = np.reshape(sudoku_table, (9, 9))
+        sudoku_table = np.transpose(sudoku_table)
+        
+        for i in range(10):
+            if i == 0 or i == 3 or i == 6 or i == 9:
+                axs[0].plot([0, 9], [i, i], color='k', linewidth=3)
+                axs[0].plot([i, i], [0, 9], color='k', linewidth=3)
+            else:
+                axs[0].plot([0, 9], [i, i], color='k', linewidth=1)
+                axs[0].plot([i, i], [0, 9], color='k', linewidth=1)
+        
+        for i in range(9):
+            for j in range(9):
+                if empty_array[i, j] == 1:
+                    axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j], fontweight='extra bold')
+                else:
+                    axs[0].text(i + 0.45, 9 - 0.65 - j, sudoku_table[i, j])
+                    
+        new_error=errors_best_sample_store[0:iteration]
+        axs[1].plot(np.linspace(0, len(new_error), len(new_error)), new_error)
+        #fig.savefig('img/'+str(iteration) + '.png')
+        camera.snap()
+    animation = camera.animate()
+    animation.save('Sudoku_solution.mp4')
+    return animation
+
 
 def sample_error_col(sample_size,sample_matrix):
     ''' p: population size '''
@@ -137,33 +222,8 @@ def random_permutation(iterable,sample_number=10):
     pool = tuple(iterable)
     r = len(pool)
     return np.array([random.sample(pool, r) for i in range(sample_number)])
-
-def save_images2gifv1():
-    directory_files=glob.glob('img/*png')
-    images = []
-    for filename in directory_files:
-        images.append(imageio.imread(filename))
-        #os.remove(filename)
-        imageio.mimsave('SudokuSolve.gif', images)
-        
-def delete_img():
-        directory_files=glob.glob('img/*png')
-        for f in directory_files:
-            os.remove(f)
        
-def save_images2gif():
-    directory_files=glob.glob('img/*png')
-    fig, ax = plt.subplots() # make it bigger
-    camera = Camera(fig)# the camera gets our figure            
-    for filename in directory_files:
-        img_obj = plt.imread(filename)
-        ax.imshow(img_obj) # plotting
-        camera.snap()
-    animation = camera.animate()
-    save('filename.gif') 
-
-        
-def evolution2(p = 20, it = 100000, cull_percen = 0.99, mut_percen = 0.05, unsolved=unsolved,initial_condition=[0]):
+def evolution2(p = 20, it = 100000, cull_percen = 0.999, mut_percen = 0.05, unsolved=unsolved,initial_condition=[0]):
     '''
     INPUTS:
     f               : sudoku cost function
@@ -187,7 +247,6 @@ def evolution2(p = 20, it = 100000, cull_percen = 0.99, mut_percen = 0.05, unsol
 
     '''
     print("Solving Sudoku")
-    delete_img() # delete previous saved images
    
     unique_items, unique_counts = np.unique(unsolved, return_counts=True) # count unique 0,1,2,3,4,5,6,7,8,9
     empty_entries = unique_counts[0] # count zeros
@@ -207,8 +266,10 @@ def evolution2(p = 20, it = 100000, cull_percen = 0.99, mut_percen = 0.05, unsol
     if len(initial_condition)>1:
         sample_random_values[1]=initial_condition
         
-    fstore = []
-    val_store= []    
+   # errors_best_sample_store = []
+    sample_best_values_store= []
+
+    
     for iteration in range(it):
         '''TOURNAMENT SELECTION: subset of random values'''
         sample_random_values_subset = np.zeros((int(p * (cull_percen)), empty_entries + 4))  # PARAMETER HERE (percentage to be kept)
@@ -238,7 +299,7 @@ def evolution2(p = 20, it = 100000, cull_percen = 0.99, mut_percen = 0.05, unsol
         # determine the best sample from selection+complement
         best_index = np.argmin(sample_random_values[:, -4])
         sample_best_values = sample_random_values[best_index]
-        sample_best_values_val = sample_random_values[best_index, range(-4,0)]
+        errors_best_sample = sample_random_values[best_index, range(-4,0)]
         
         
         #rnd.shuffle(sample_random_values)
@@ -255,18 +316,16 @@ def evolution2(p = 20, it = 100000, cull_percen = 0.99, mut_percen = 0.05, unsol
         
         
         # plot the current Sudoku and error per iteraton
-        if iteration%100==0: print('iteration:'+str(iteration)+ ' errors:'+str(sample_best_values_val), end='\n')
-        fstore.append(sample_best_values_val.astype('int'))
-        val_store.append(sample_best_values.astype('int'))
-        if iteration%10==0: plot_util(unsolved, sample_best_values, fstore, iteration)
-        
-        if sample_best_values_val[0]==0: break
+        if iteration%100==0: print('iteration:'+str(iteration)+ ' errors:'+str(errors_best_sample), end='\n')
+        sample_best_values_store.append(sample_best_values)
+        #if iteration%10==0:plot_util(unsolved, sample_best_values, errors_best_sample_store, iteration)
+        if errors_best_sample[0]==0: break
 
-    return val_store
+    return sample_best_values_store
 
 
 #solved= [np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 9, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 0, 0,0,0]),
 #         np.array([2, 4, 5, 2, 4, 8, 5, 7, 6, 9, 8, 4, 8, 7, 8, 4, 6, 7, 4, 1, 9, 5, 7, 1, 6, 4, 5, 1, 9])]
 
-solved = evolution2(p = 20, it = 100000, cull_percen = 0.999, mut_percen = 0.05, unsolved=unsolved)
-save_images2gifv1()
+solved= evolution2(p = 20, it = 100000, cull_percen = 0.999, mut_percen = 0.05, unsolved=unsolved)
+plot_util2(unsolved,solved)
