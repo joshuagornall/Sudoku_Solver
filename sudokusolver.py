@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
 import copy
 import numpy.random as rnd
 import random
@@ -138,10 +137,10 @@ def plot_into_gif(unsolved, solved,number_steps=100):
                     
         new_error               = errors_best_sample_store[:iteration]
         x                       = np.linspace(0, len(new_error), len(new_error))
-        axs[1].plot(x, [new_error[i][0] for i in range(len(new_error))], color='k')
-        axs[1].plot(x, [new_error[i][1] for i in range(len(new_error))], color='g')
-        axs[1].plot(x, [new_error[i][2] for i in range(len(new_error))], color='r')
-        axs[1].plot(x, [new_error[i][3] for i in range(len(new_error))], color='b')
+        axs[1].plot(x, [new_error[i][0] for i in range(len(new_error))], color='k', linewidth=0.5)
+        axs[1].plot(x, [new_error[i][1] for i in range(len(new_error))], color='g', linewidth=0.5)
+        axs[1].plot(x, [new_error[i][2] for i in range(len(new_error))], color='r', linewidth=0.5)
+        axs[1].plot(x, [new_error[i][3] for i in range(len(new_error))], color='b', linewidth=0.5)
         
         if iteration==iterations-1:print(new_error)
         axs[1].legend(['Total errors', 'Row errors', 'Column errors', 'Quadrant errors'], loc='upper right')
@@ -270,7 +269,7 @@ solved                          = genethic_algorithm(population_size   = 20,
                                                      subset_percentage = 0.999,
                                                      mut_percen        = 0.05,
                                                      unsolved          = unsolved)
-animation=plot_into_gif(unsolved,solved,100)
+animation=plot_into_gif(unsolved,solved,number_steps=100)
 
 
 
